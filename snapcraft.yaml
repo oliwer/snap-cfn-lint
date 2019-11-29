@@ -1,0 +1,24 @@
+name: cfn-lint-oliwer
+version: git
+summary: CloudFormation template checker
+description: |
+  CloudFormation template checker for syntax and best practices.
+license: Apache-2.0
+base: core18
+
+grade: stable
+confinement: strict
+
+parts:
+  cfn-lint:
+    plugin: python
+    python-version: python3
+    python-packages:
+      - cfn-lint
+
+apps:
+  cfn-lint:
+    command: bin/cfn-lint
+    plugs:
+      - home
+

@@ -1,0 +1,35 @@
+name: AutoUpdate
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+
+jobs:
+  plop:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Look for new upstream release and create new tag
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      shell: bash
+      run: |
+        set -euxo pipefail
+        apt-get install -qq curl jq gawk
+        git_refs_url=$(jq .repository.git_refs_url $GITHUB_EVENT_PATH | tr -d '"' | sed 's/{\/sha}//g')
+        upstreamVer=$(curl -sS "https://api.github.com/repos/aws-cloudformation/cfn-python-lint/releases/latest" \
+          | awk '/"tag_name"/{print $2}' | tr -d '"v,')
+        test -n "$upstreamVer"
+        if [ "$(git describe)" != "$upstreamVer" ]; then
+          echo "New upstream release: $upstreamVer"
+          curl -s -X POST $git_refs_url -H "Authorization: token $GITHUB_TOKEN" -d @- << EOF
+            {
+              "ref": "refs/tags/$TAG",
+              "sha": "$GITHUB_SHA"
+            }
+          EOF
+        else
+          echo "No new release available."
+        fi
+        
+

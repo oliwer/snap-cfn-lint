@@ -17,7 +17,7 @@ parts:
       - cfn-lint
 
 apps:
-  cfn-lint:
+  cfn-lint-oliwer:
     command: bin/cfn-lint
     plugs:
       - home

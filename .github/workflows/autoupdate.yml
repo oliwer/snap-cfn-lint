@@ -15,7 +15,6 @@ jobs:
       shell: bash
       run: |
         set -euxo pipefail
-        apt-get install -qq curl jq gawk
         git_refs_url=$(jq .repository.git_refs_url $GITHUB_EVENT_PATH | tr -d '"' | sed 's/{\/sha}//g')
         upstreamVer=$(curl -sS "https://api.github.com/repos/aws-cloudformation/cfn-python-lint/releases/latest" \
           | awk '/"tag_name"/{print $2}' | tr -d '"v,')

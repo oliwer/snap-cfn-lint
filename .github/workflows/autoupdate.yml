@@ -15,18 +15,15 @@ jobs:
       shell: bash
       run: |
         set -euxo pipefail
-        git_refs_url=$(jq .repository.git_refs_url $GITHUB_EVENT_PATH | tr -d '"' | sed 's/{\/sha}//g')
         upstreamVer=$(curl -sS "https://api.github.com/repos/aws-cloudformation/cfn-python-lint/releases/latest" \
-          | awk '/"tag_name"/{print $2}' | tr -d '"v,')
+          | jq -r .tag_name | tr -d v)
         test -n "$upstreamVer"
         if [ "$(git describe)" != "$upstreamVer" ]; then
           echo "New upstream release: $upstreamVer"
-          curl -s -X POST $git_refs_url -H "Authorization: token $GITHUB_TOKEN" -d @- << EOF
-            {
-              "ref": "refs/tags/$TAG",
-              "sha": "$GITHUB_SHA"
-            }
-          EOF
+          curl -sS -X POST "https://api.github.com/repos/$GITHUB_REPOSITORY/git/tags" \
+            -H "Authorization: token $GITHUB_TOKEN" -d @- <<__
+            { "tag":"$upstreamVer", "message":"$upstreamVer", "object:"$(git rev-parse HEAD)", "type":"commit" } 
+        __
         else
           echo "No new release available."
         fi

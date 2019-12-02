@@ -2,7 +2,7 @@ name: AutoUpdate
 
 on:
   schedule:
-    - cron: "0 9 * * *"
+    - cron: "0 8 * * *"
 
 jobs:
   plop:
@@ -19,13 +19,9 @@ jobs:
           | jq -r .tag_name | tr -d v)
         test -n "$upstreamVer"
         if [ "$(git describe)" != "$upstreamVer" ]; then
-          echo "New upstream release: $upstreamVer"
           curl -sS -X POST "https://api.github.com/repos/$GITHUB_REPOSITORY/git/tags" \
             -H "Authorization: token $GITHUB_TOKEN" -d @- <<__
-            { "tag":"$upstreamVer", "message":"$upstreamVer", "object:"$(git rev-parse HEAD)", "type":"commit" } 
+            { "tag":"$upstreamVer", "message":"$upstreamVer", "object":"$(git rev-parse HEAD)", "type":"commit" } 
         __
-        else
-          echo "No new release available."
         fi
-        
 

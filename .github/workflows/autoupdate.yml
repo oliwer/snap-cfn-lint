@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Look for new upstream release and create new tag
+    - name: Sync releases with upstream
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       shell: bash
@@ -19,9 +19,9 @@ jobs:
           | jq -r .tag_name | tr -d v)
         test -n "$upstreamVer"
         if [ "$(git describe)" != "$upstreamVer" ]; then
-          curl -sS -X POST "https://api.github.com/repos/$GITHUB_REPOSITORY/git/tags" \
+          curl -sS -X POST "https://api.github.com/repos/$GITHUB_REPOSITORY/releases" \
             -H "Authorization: token $GITHUB_TOKEN" -d @- <<__
-            { "tag":"$upstreamVer", "message":"$upstreamVer", "object":"$(git rev-parse HEAD)", "type":"commit" } 
+            { "name":"$upstreamVer", "tag_name":"$upstreamVer" } 
         __
         fi
 

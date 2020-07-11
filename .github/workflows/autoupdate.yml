@@ -8,7 +8,7 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-    - name: Look for new upstream release and create new tag
+    - name: Look for new upstream release and update snapcraft
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       shell: bash
@@ -19,15 +19,18 @@ jobs:
           | jq -r .tag_name | tr -d v)
         test -n "$upstream"
 
-        git clone "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git" .
+        git clone --depth=1 "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git" .
 
-        current=$(git describe)
+        current=$(awk '/^version:/{print $2}' snapcraft.yaml)
         test -n "$current"
 
         [ "$current" != "$upstream" ] || exit 0
 
+        sed -i "s/^version: .*\$/version: $upstream/" snapcraft.yaml
+
         git config --local user.name ${GITHUB_ACTOR}
         git config --local user.email ${GITHUB_ACTOR}@github.com
 
-        git tag -a "$upstream" -m "$upstream"
-        git push --tags
+        git commit -a -m "$upstream"
+        git push
+

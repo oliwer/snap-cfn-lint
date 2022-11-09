@@ -15,7 +15,7 @@ jobs:
       run: |
         set -euxo pipefail
 
-        upstream=$(curl -sS "https://api.github.com/repos/aws-cloudformation/cfn-python-lint/releases/latest" \
+        upstream=$(curl -fsSL "https://api.github.com/repos/aws-cloudformation/cfn-python-lint/releases/latest" \
           | jq -r .tag_name | tr -d v)
         test -n "$upstream"
 

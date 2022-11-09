@@ -4,7 +4,7 @@ summary: CloudFormation template checker
 description: |
   CloudFormation template checker for syntax and best practices.
 license: Apache-2.0
-base: core18
+base: core20
 
 grade: stable
 confinement: strict

@@ -4,7 +4,7 @@ summary: CloudFormation template checker
 description: |
   CloudFormation template checker for syntax and best practices.
 license: Apache-2.0
-base: core20
+base: core22
 
 grade: stable
 confinement: strict
@@ -12,7 +12,6 @@ confinement: strict
 parts:
   cfn-lint:
     plugin: python
-    python-version: python3
     python-packages:
       - cfn-lint
 

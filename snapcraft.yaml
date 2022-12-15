@@ -1,5 +1,5 @@
 name: cfn-lint-oliwer
-version: 0.72.2
+version: 0.72.3
 summary: CloudFormation template checker
 description: |
   CloudFormation template checker for syntax and best practices.
